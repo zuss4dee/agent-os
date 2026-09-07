@@ -30,7 +30,9 @@ Packets **reference** skills (id, version, artifact hash, permission envelope). 
 
 ### 3. Runtime loading
 
-A future loader asks for `get_compiled_packet(agent_id, version)` and `load_skill(id, version, expected_hash)`. Mismatched hashes are refused. See [runtime.md](runtime.md).
+`loadAgentRelease(agentId, version)` loads a **released packet** (production) or an explicit development/lab artifact, then verifies schema, contract hash, exact skill pins, artifact hashes, lifecycle/trust, and permission envelopes. Mismatched hashes and undeclared capabilities are refused. See [runtime.md](runtime.md).
+
+The loader is an integrity boundary, not a sandbox.
 
 ### 4. Evaluation
 

@@ -9,6 +9,9 @@ import { evaluateTarget } from "./evaluate.ts";
 import { ValidationFailed } from "./errors.ts";
 import { findSkill, validateCatalog } from "./registry.ts";
 import { SKILL_PIN } from "./semver.ts";
+import { loadAgentRelease, parseExactReleasePin } from "./runtime-loader.ts";
+import { RuntimeError } from "./runtime-errors.ts";
+import type { RuntimeContext, RuntimeMode } from "./runtime-types.ts";
 
 function usage(): string {
   return `agent-os — control plane CLI
@@ -21,11 +24,13 @@ Usage:
   agent-os diff-agent <id>
   agent-os diff-skill <id@version>
   agent-os evaluate <agent-id|skill-id@version>
+  agent-os load <agent>@<version> [--mode production|development|lab]
   agent-os validate-catalog
 
 Options:
   --root <path>   Repository root (default: detect)
   --release       Write an immutable versioned packet under releases/
+  --mode <mode>   Runtime mode for load (default: production)
   --json          Machine-readable output
 `;
 }
@@ -40,6 +45,7 @@ function parseArgs(argv: string[]) {
   let root: string | undefined;
   let json = false;
   let release = false;
+  let mode: RuntimeMode = "production";
   const positional: string[] = [];
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -49,6 +55,12 @@ function parseArgs(argv: string[]) {
       json = true;
     } else if (a === "--release") {
       release = true;
+    } else if (a === "--mode") {
+      const value = args[++i];
+      if (value !== "production" && value !== "development" && value !== "lab") {
+        fail(`Unknown mode ${value}. Use production, development, or lab.`);
+      }
+      mode = value;
     } else if (a === "-h" || a === "--help") {
       console.log(usage());
       process.exit(0);
@@ -58,7 +70,48 @@ function parseArgs(argv: string[]) {
       positional.push(a);
     }
   }
-  return { root: root ?? findRepoRoot(), json, release, command: positional[0], target: positional[1] };
+  return { root: root ?? findRepoRoot(), json, release, mode, command: positional[0], target: positional[1] };
+}
+
+function printLoad(ctx: RuntimeContext, json: boolean): void {
+  const summary = {
+    verification: "passed",
+    mode: ctx.mode,
+    isolation: ctx.isolation,
+    agent: ctx.agent.id,
+    version: ctx.agent.version,
+    status: ctx.agent.status,
+    release: ctx.release.path,
+    contract_hash: ctx.agent.contract_hash,
+    skills: ctx.skills.map((s) => ({
+      id: s.id,
+      version: s.version,
+      artifact_hash: s.artifact_hash,
+      lifecycle: s.lifecycle,
+      trusted: s.trusted,
+    })),
+    permissions: ctx.capabilities.permissions,
+    tools: ctx.capabilities.tools,
+    connectors: ctx.capabilities.connectors,
+  };
+  if (json) {
+    console.log(JSON.stringify(summary, null, 2));
+    return;
+  }
+  console.log(`verification:  passed`);
+  console.log(`mode:          ${ctx.mode}`);
+  console.log(`isolation:     ${ctx.isolation} (integrity checks only; not a sandbox)`);
+  console.log(`agent:         ${ctx.agent.id}@${ctx.agent.version} (${ctx.agent.status})`);
+  console.log(`release:       ${ctx.release.path}`);
+  console.log(`contract hash: ${ctx.agent.contract_hash}`);
+  console.log(
+    `skills:        ${
+      ctx.skills.map((s) => `${s.pin}#${s.artifact_hash}`).join(", ") || "(none)"
+    }`,
+  );
+  console.log(`permissions:   ${JSON.stringify(ctx.capabilities.permissions)}`);
+  console.log(`tools:         ${ctx.capabilities.tools.join(", ") || "(none)"}`);
+  console.log(`connectors:    ${ctx.capabilities.connectors.join(", ") || "(none)"}`);
 }
 
 function printValidation(title: string, result: { ok: boolean; errors: string[]; warnings: string[] }, json: boolean) {
@@ -90,7 +143,7 @@ function resolveSkillDir(root: string, target: string): { dir: string; id: strin
 }
 
 export async function main(argv = process.argv): Promise<void> {
-  const { root, json, release, command, target } = parseArgs(argv);
+  const { root, json, release, mode, command, target } = parseArgs(argv);
   if (!command) fail(usage(), 2);
 
   try {
@@ -175,11 +228,18 @@ export async function main(argv = process.argv): Promise<void> {
         console.log(listAgentIds(root).join("\n") || "(none)");
         break;
       }
+      case "load": {
+        if (!target) fail("load requires <agent>@<version>");
+        const pin = parseExactReleasePin(target);
+        const ctx = loadAgentRelease(root, pin.id, pin.version, { mode });
+        printLoad(ctx, json);
+        break;
+      }
       default:
         fail(`Unknown command ${command}\n${usage()}`, 2);
     }
   } catch (err) {
-    if (err instanceof ValidationFailed) {
+    if (err instanceof ValidationFailed || err instanceof RuntimeError) {
       console.error(err.message);
       process.exit(1);
     }

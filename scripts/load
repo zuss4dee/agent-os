@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+CMD="$(basename "$0")"
+if [[ -x "$ROOT/node_modules/.bin/tsx" ]]; then
+  exec "$ROOT/node_modules/.bin/tsx" "$ROOT/src/cli.ts" "$CMD" "$@"
+fi
+if [[ -f "$ROOT/dist/cli.js" ]]; then
+  exec node "$ROOT/dist/cli.js" "$CMD" "$@"
+fi
+echo "Install dependencies first: npm install" >&2
+exit 127

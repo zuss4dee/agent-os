@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "test": "tsx --test tests/acceptance.test.ts tests/templates.test.ts",
+    "test": "tsx --test tests/acceptance.test.ts tests/templates.test.ts tests/runtime.test.ts",
+    "load": "tsx src/cli.ts load",
     "agent-os": "tsx src/cli.ts",
     "validate-agent": "tsx src/cli.ts validate-agent",
     "validate-skill": "tsx src/cli.ts validate-skill",

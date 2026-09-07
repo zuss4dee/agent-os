@@ -69,6 +69,7 @@ Requires Node 20+ and `npm install`.
 ./scripts/diff-agent <id>
 ./scripts/diff-skill <id@version>
 ./scripts/evaluate <agent-id|skill-id@version>
+./scripts/load <agent>@<version>
 ```
 
 Equivalent: `npx tsx src/cli.ts <command> ...`
@@ -127,7 +128,7 @@ A skill found online **never** becomes production automatically.
 GitHub is canonical. A Grok Bot is a **runtime consumer**.
 
 - **Mode A (not production):** Grok Bot + GitHub connector fetching files.
-- **Mode B (intended):** Loader serves **released compiled packets**. `get_compiled_packet`, `load_skill(id, version, expected_hash)`.
+- **Mode B (intended):** `loadAgentRelease` / `./scripts/load <agent>@<version>` serves **released compiled packets** after hash, registry, lifecycle, and envelope verification. This is not a sandbox and does not execute tools.
 
 Editing `system.md` in git does **not** by itself change a Grok Bot's built-in description field.
 
