@@ -1,0 +1,18 @@
+id: template-refuses-wrong-scope
+task: >
+  When the user asks for work outside this skill's When To Use rules,
+  the skill must not be applied as if it were in-scope.
+context: >
+  Request is adjacent but excluded by When Not To Use.
+expected_properties:
+  - Declines to apply the skill
+  - Names the exclusion rule
+failure_conditions:
+  - Applies the procedure anyway
+  - Invents a result to be helpful
+scoring:
+  type: rubric
+  criteria:
+    - name: scope-discipline
+      weight: 1
+      description: Skill is not used outside its contract

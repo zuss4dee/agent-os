@@ -1,0 +1,50 @@
+id: skill-template
+name: Skill Template
+version: 0.0.0
+
+description: >
+  Bootstrap template for a reusable Agent OS skill. Replace every field.
+
+origin:
+  type: internal
+  source_url: null
+  author: Agent OS
+  imported_at: null
+  license: null
+  original_version: null
+  original_id: null
+
+runtime:
+  type: instruction
+  entrypoint: SKILL.md
+  code_paths: []
+
+requirements:
+  tools: []
+  connectors: []
+  credentials: []
+  dependencies: []
+
+permissions:
+  network: false
+  filesystem: false
+  execution: false
+  destructive: false
+
+risk:
+  level: low
+  notes: Instruction-only template. Raise risk if code, network, or credentials are added.
+
+status:
+  lifecycle: imported
+  reviewer: null
+  review_status: unreviewed
+  trusted: false
+
+evaluation:
+  suite: evals/
+  score: null
+  last_evaluated_at: null
+
+compatibility:
+  agents: []

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-os.local/schemas/compiled-agent.schema.json",
+  "title": "CompiledAgentPacket",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "agent",
+    "source",
+    "hashes",
+    "identity",
+    "instructions",
+    "skills",
+    "tools",
+    "knowledge",
+    "evaluation",
+    "runtime"
+  ],
+  "properties": {
+    "schema": { "const": "agent-os.compiled-agent.v1" },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "version", "status"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "candidate", "production", "deprecated", "fixture"]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "dirty", "generated_at"],
+      "properties": {
+        "commit": { "type": ["string", "null"] },
+        "dirty": { "type": "boolean" },
+        "generated_at": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract"],
+      "properties": {
+        "contract": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "operating_manual", "shared_policies"],
+      "properties": {
+        "system": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": { "type": "string" },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "operating_manual": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": { "type": "string" },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "shared_policies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "path", "sha256"],
+            "properties": {
+              "id": { "type": "string" },
+              "path": { "type": "string" },
+              "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/compiledSkillRef" }
+    },
+    "tools": { "type": "array", "items": { "type": "string" } },
+    "knowledge": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "kind"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": ["string", "null"] },
+          "kind": { "type": "string", "enum": ["dir", "file"] }
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suite", "cases"],
+      "properties": {
+        "suite": { "type": "string" },
+        "cases": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["loader", "sync", "stale_check", "skill_retrieval"],
+      "properties": {
+        "loader": { "type": "string", "minLength": 1 },
+        "sync": { "type": "string", "minLength": 1 },
+        "stale_check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contract_hash", "commit"],
+          "properties": {
+            "contract_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "commit": { "type": ["string", "null"] }
+          }
+        },
+        "skill_retrieval": { "const": "reference-only" }
+      }
+    }
+  },
+  "$defs": {
+    "compiledSkillRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "pin",
+        "path",
+        "lifecycle",
+        "runtime_type",
+        "entrypoint",
+        "artifact_hash",
+        "permissions",
+        "requirements",
+        "origin_type",
+        "trusted"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "string" },
+        "pin": { "type": "string" },
+        "path": { "type": "string" },
+        "lifecycle": { "type": "string" },
+        "runtime_type": { "type": "string", "enum": ["instruction", "executable", "hybrid"] },
+        "entrypoint": { "type": "string" },
+        "artifact_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["network", "filesystem", "execution", "destructive"],
+          "properties": {
+            "network": { "type": "boolean" },
+            "filesystem": { "type": "boolean" },
+            "execution": { "type": "boolean" },
+            "destructive": { "type": "boolean" }
+          }
+        },
+        "requirements": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tools", "connectors"],
+          "properties": {
+            "tools": { "type": "array", "items": { "type": "string" } },
+            "connectors": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "origin_type": { "type": "string", "enum": ["internal", "third-party"] },
+        "trusted": { "type": "boolean" }
+      }
+    }
+  }
+}

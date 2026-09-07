@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-os.local/schemas/skill-manifest.schema.json",
+  "title": "SkillManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "description",
+    "origin",
+    "runtime",
+    "requirements",
+    "permissions",
+    "risk",
+    "status",
+    "evaluation",
+    "compatibility"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["internal", "third-party"]
+        },
+        "source_url": { "type": ["string", "null"] },
+        "author": { "type": ["string", "null"] },
+        "imported_at": { "type": ["string", "null"], "format": "date" },
+        "license": { "type": ["string", "null"] },
+        "original_version": { "type": ["string", "null"] },
+        "original_id": { "type": ["string", "null"] }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "entrypoint"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["instruction", "executable", "hybrid"]
+        },
+        "entrypoint": { "type": "string", "minLength": 1 },
+        "code_paths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tools", "connectors"],
+      "properties": {
+        "tools": { "type": "array", "items": { "type": "string" } },
+        "connectors": { "type": "array", "items": { "type": "string" } },
+        "credentials": {
+          "type": "array",
+          "description": "Credential names only. Never values.",
+          "items": { "type": "string" }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "filesystem", "execution"],
+      "properties": {
+        "network": { "type": "boolean" },
+        "filesystem": { "type": "boolean" },
+        "execution": { "type": "boolean" },
+        "destructive": { "type": "boolean" }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lifecycle"],
+      "properties": {
+        "lifecycle": {
+          "type": "string",
+          "enum": [
+            "discovered",
+            "imported",
+            "review",
+            "adapted",
+            "evaluated",
+            "approved",
+            "production",
+            "deprecated",
+            "fixture"
+          ]
+        },
+        "reviewer": { "type": ["string", "null"] },
+        "review_status": {
+          "type": ["string", "null"],
+          "enum": ["unreviewed", "in-review", "approved", "rejected", null]
+        },
+        "trusted": {
+          "type": "boolean",
+          "description": "Must stay false for third-party skills until review is approved."
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suite"],
+      "properties": {
+        "suite": { "type": "string", "minLength": 1 },
+        "score": { "type": ["number", "null"] },
+        "last_evaluated_at": { "type": ["string", "null"] }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agents"],
+      "properties": {
+        "agents": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

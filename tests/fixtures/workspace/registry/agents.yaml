@@ -1,0 +1,10 @@
+schema_version: 1
+agents:
+  - id: fixture-agent
+    path: agents/fixture-agent
+    version: 1.0.0
+    status: fixture
+  - id: gate-agent
+    path: agents/gate-agent
+    version: 1.0.0
+    status: production

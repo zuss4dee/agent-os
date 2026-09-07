@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-os.local/schemas/compiled-skill.schema.json",
+  "title": "CompiledSkillPacket",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "skill",
+    "source",
+    "hashes",
+    "entrypoint",
+    "origin_type",
+    "permissions",
+    "requirements",
+    "runtime",
+    "trusted"
+  ],
+  "properties": {
+    "schema": { "const": "agent-os.compiled-skill.v1" },
+    "skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "version", "lifecycle"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "lifecycle": { "type": "string" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit", "dirty", "generated_at"],
+      "properties": {
+        "commit": { "type": ["string", "null"] },
+        "dirty": { "type": "boolean" },
+        "generated_at": { "type": "string" }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact"],
+      "properties": {
+        "artifact": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "entrypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "origin_type": { "type": "string", "enum": ["internal", "third-party"] },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "filesystem", "execution", "destructive"],
+      "properties": {
+        "network": { "type": "boolean" },
+        "filesystem": { "type": "boolean" },
+        "execution": { "type": "boolean" },
+        "destructive": { "type": "boolean" }
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tools", "connectors"],
+      "properties": {
+        "tools": { "type": "array", "items": { "type": "string" } },
+        "connectors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "entrypoint"],
+      "properties": {
+        "type": { "type": "string", "enum": ["instruction", "executable", "hybrid"] },
+        "entrypoint": { "type": "string" }
+      }
+    },
+    "trusted": { "type": "boolean" }
+  }
+}

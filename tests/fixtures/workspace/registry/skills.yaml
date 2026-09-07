@@ -1,0 +1,11 @@
+schema_version: 1
+skills:
+  - id: source-verification
+    version: 1.0.0
+    path: skills/candidates/source-verification/1.0.0
+    lifecycle: fixture
+  - id: claim-check
+    version: 1.0.0
+    path: skills/production/claim-check/1.0.0
+    lifecycle: production
+    artifact_hash: d892e0827a0fa4ff8ed9d2cf8aa544c5a0ff4f91c9b25fa08ca3d7d09f066f54

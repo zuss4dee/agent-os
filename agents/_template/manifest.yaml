@@ -1,0 +1,35 @@
+id: template
+name: Agent Template
+version: 0.0.0
+
+prompt:
+  profile: profile.md
+  system: system.md
+  operating_manual: operating-manual.md
+
+skills: []
+
+tools: []
+
+knowledge:
+  - knowledge/
+  - references/
+
+shared_policies:
+  - principles.md
+  - quality-bar.md
+  - anti-slop.md
+  - research-protocol.md
+  - evidence-policy.md
+  - safety.md
+
+runtime:
+  loader: agent-os
+  sync: on-session-start
+
+evaluation:
+  suite: evals/
+
+metadata:
+  status: draft
+  owners: []

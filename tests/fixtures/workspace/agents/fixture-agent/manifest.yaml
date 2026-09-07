@@ -1,0 +1,27 @@
+id: fixture-agent
+name: Fixture Agent
+version: 1.0.0
+
+prompt:
+  profile: profile.md
+  system: system.md
+  operating_manual: operating-manual.md
+
+skills:
+  - source-verification@1.0.0
+
+tools: []
+
+knowledge:
+  - knowledge/
+  - references/
+
+runtime:
+  loader: agent-os
+  sync: on-session-start
+
+evaluation:
+  suite: evals/
+
+metadata:
+  status: fixture

@@ -1,0 +1,36 @@
+{
+  "name": "agent-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canonical control plane for agent identities, skills, evaluation, and runtime loading.",
+  "type": "module",
+  "bin": {
+    "agent-os": "./scripts/agent-os"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "tsx --test tests/acceptance.test.ts tests/templates.test.ts",
+    "agent-os": "tsx src/cli.ts",
+    "validate-agent": "tsx src/cli.ts validate-agent",
+    "validate-skill": "tsx src/cli.ts validate-skill",
+    "compile-agent": "tsx src/cli.ts compile-agent",
+    "compile-skill": "tsx src/cli.ts compile-skill",
+    "diff-agent": "tsx src/cli.ts diff-agent",
+    "diff-skill": "tsx src/cli.ts diff-skill",
+    "evaluate": "tsx src/cli.ts evaluate"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

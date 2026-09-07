@@ -1,0 +1,52 @@
+id: claim-check
+name: Claim Check
+version: 1.0.0
+
+description: >
+  Production-lifecycle fixture skill used to prove pin policy and published hashes.
+  Not a real production fleet skill.
+
+origin:
+  type: internal
+  source_url: null
+  author: Agent OS
+  imported_at: null
+  license: null
+  original_version: null
+  original_id: null
+
+runtime:
+  type: instruction
+  entrypoint: SKILL.md
+  code_paths: []
+
+requirements:
+  tools: []
+  connectors: []
+  credentials: []
+  dependencies: []
+
+permissions:
+  network: false
+  filesystem: false
+  execution: false
+  destructive: false
+
+risk:
+  level: low
+  notes: Instruction-only production-lifecycle fixture.
+
+status:
+  lifecycle: production
+  reviewer: Agent OS
+  review_status: approved
+  trusted: true
+
+evaluation:
+  suite: evals/
+  score: 1
+  last_evaluated_at: "2026-01-01"
+
+compatibility:
+  agents:
+    - gate-agent

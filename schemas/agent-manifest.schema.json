@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-os.local/schemas/agent-manifest.schema.json",
+  "title": "AgentManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "prompt",
+    "skills",
+    "knowledge",
+    "runtime",
+    "evaluation",
+    "metadata"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Stable agent identifier. Directory name must match."
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$",
+      "description": "Semantic version of this agent definition."
+    },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "system", "operating_manual"],
+      "properties": {
+        "profile": { "type": "string", "minLength": 1 },
+        "system": { "type": "string", "minLength": 1 },
+        "operating_manual": { "type": "string", "minLength": 1 }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*@[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "version"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+              "version": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": []
+    },
+    "knowledge": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "shared_policies": {
+      "type": "array",
+      "description": "Filenames under shared/. Omit to include the default policy set.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["loader"],
+      "properties": {
+        "loader": { "type": "string", "minLength": 1 },
+        "sync": {
+          "type": "string",
+          "enum": ["on-session-start", "on-demand", "pinned-release"]
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suite"],
+      "properties": {
+        "suite": { "type": "string", "minLength": 1 }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["draft", "candidate", "production", "deprecated", "fixture"]
+        },
+        "owners": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

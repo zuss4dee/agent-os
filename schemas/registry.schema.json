@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-os.local/schemas/registry.schema.json",
+  "title": "AgentOSRegistry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": { "type": "integer", "minimum": 1 },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "version", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" },
+          "version": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "candidate", "production", "deprecated", "fixture"]
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "path", "lifecycle"],
+        "properties": {
+          "id": { "type": "string" },
+          "version": { "type": "string" },
+          "path": { "type": "string" },
+          "lifecycle": { "type": "string" },
+          "artifact_hash": {
+            "type": ["string", "null"],
+            "description": "Published skill artifact hash. Required for production and deprecated skills."
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "connector": { "type": "string" }
+        }
+      }
+    },
+    "routines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path"],
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" },
+          "version": { "type": "string" }
+        }
+      }
+    }
+  }
+}
